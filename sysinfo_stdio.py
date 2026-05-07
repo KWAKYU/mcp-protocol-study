@@ -61,30 +61,20 @@ def get_processes(n=5):
         lines.append(f"{cpu:5.1f}%  {name}")
     return "\n".join(lines)
 
-def open_dashboard():
-    dashboard = os.path.join(os.path.dirname(__file__), "dashboard.py")
-    import subprocess as sp, sys as _sys, time
-    sp.Popen([_sys.executable, dashboard], stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-    time.sleep(0.8)
-    sp.run(["open", "http://127.0.0.1:8892"])
-    return "대시보드 열림 → http://127.0.0.1:8892"
-
 TOOLS = [
     {"name": "cpu",            "description": "현재 CPU 사용률",              "inputSchema": {"type": "object", "properties": {}}},
     {"name": "memory",         "description": "메모리 사용량",                "inputSchema": {"type": "object", "properties": {}}},
     {"name": "battery",        "description": "배터리 잔량 및 충전 상태",      "inputSchema": {"type": "object", "properties": {}}},
     {"name": "disk",           "description": "디스크 사용량",                "inputSchema": {"type": "object", "properties": {}}},
     {"name": "processes",      "description": "CPU 많이 쓰는 프로세스 목록",   "inputSchema": {"type": "object", "properties": {"n": {"type": "number", "description": "몇 개 볼지 (기본 5)"}}}},
-    {"name": "open_dashboard", "description": "시스템 정보 대시보드를 브라우저로 열기", "inputSchema": {"type": "object", "properties": {}}},
 ]
 
 HANDLERS = {
-    "cpu":            lambda a: get_cpu(),
-    "memory":         lambda a: get_memory(),
-    "battery":        lambda a: get_battery(),
-    "disk":           lambda a: get_disk(),
-    "processes":      lambda a: get_processes(int(a.get("n", 5))),
-    "open_dashboard": lambda a: open_dashboard(),
+    "cpu":       lambda a: get_cpu(),
+    "memory":    lambda a: get_memory(),
+    "battery":   lambda a: get_battery(),
+    "disk":      lambda a: get_disk(),
+    "processes": lambda a: get_processes(int(a.get("n", 5))),
 }
 
 def ok(id_, result): return {"jsonrpc": "2.0", "id": id_, "result": result}

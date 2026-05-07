@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 """
 시스템 정보 MCP 서버 (포트 8891)
-툴: cpu, memory, battery, disk, processes, open_dashboard
+툴: cpu, memory, battery, disk, processes
 """
 
 import socket
 import json
 import threading
 import subprocess
-import os
-import sys
 
 HOST = "127.0.0.1"
 PORT = 8891
@@ -69,18 +67,6 @@ def tool_disk(params):
         )
     return "디스크 정보 없음"
 
-_dashboard_started = False
-
-def tool_open_dashboard(params):
-    global _dashboard_started
-    dashboard_path = os.path.join(os.path.dirname(__file__), "dashboard.py")
-    if not _dashboard_started:
-        subprocess.Popen([sys.executable, dashboard_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        _dashboard_started = True
-        import time; time.sleep(0.8)
-    subprocess.run(["open", "http://127.0.0.1:8892"])
-    return "대시보드를 브라우저에서 열었습니다 → http://127.0.0.1:8892"
-
 def tool_processes(params):
     n = int(params.get("n", 5))
     result = subprocess.run(["ps", "aux"], capture_output=True, text=True)
@@ -131,20 +117,14 @@ TOOLS = {
             }
         }
     },
-    "open_dashboard": {
-        "name": "open_dashboard",
-        "description": "시스템 정보 대시보드를 브라우저로 열기",
-        "inputSchema": {"type": "object", "properties": {}}
-    },
 }
 
 TOOL_HANDLERS = {
-    "cpu":            tool_cpu,
-    "memory":         tool_memory,
-    "battery":        tool_battery,
-    "disk":           tool_disk,
-    "processes":      tool_processes,
-    "open_dashboard": tool_open_dashboard,
+    "cpu":       tool_cpu,
+    "memory":    tool_memory,
+    "battery":   tool_battery,
+    "disk":      tool_disk,
+    "processes": tool_processes,
 }
 
 # ── JSON-RPC ───────────────────────────────────────────────────────────────
